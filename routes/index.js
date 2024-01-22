@@ -2,22 +2,26 @@ const express = require('express');
 const router = express.Router();
 const sgMail = require('@sendgrid/mail')
 
-router.get('/', (req, res, next) => {
+router.post('/send-email', (req, res, next) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  const {name, email, subject, message} = req.body;
   const msg = {
     to: 'nathanejbrown@gmail.com', 
-    from: 'nathanejbrown@gmail.com', 
-    subject: 'Sending with SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    from: 'dennis.nathan@me.com', 
+    subject: `${subject} from ${name}, ${email}`,
+    text: message
   }
   sgMail
     .send(msg)
     .then(() => {
-      console.log('Email sent')
+      res.send({
+        status: 'success'
+      })
     })
     .catch((error) => {
-      console.error(error)
+      res.send({
+        status: 'failed'
+      })
     })
 })
 
